@@ -1,0 +1,933 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="设计模式,奇技淫巧," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="什么是“有多种可替代解决方案的业务逻辑”？举几个例子说明：    客户端的http请求操作，可以实现的方案有Retrofit、OkHttp、Volley等；   客户端的数据库存储方案可以为Realm、greenDao、OrmLite等；   图片加载的方案可以是Fresco、Glide、Picasso、UIL等。    如何快速替换？先来描述一下需求，比如说，目前正在用的http请求是Volle">
+<meta name="keywords" content="设计模式,奇技淫巧">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对于有多种可替代解决方案的业务逻辑，提供一种快速更换的思路">
+<meta property="og:url" content="http://cjw-blog.net/2016/12/11/解耦思路/index.html">
+<meta property="og:site_name" content="Jianwei&#39;s blog">
+<meta property="og:description" content="什么是“有多种可替代解决方案的业务逻辑”？举几个例子说明：    客户端的http请求操作，可以实现的方案有Retrofit、OkHttp、Volley等；   客户端的数据库存储方案可以为Realm、greenDao、OrmLite等；   图片加载的方案可以是Fresco、Glide、Picasso、UIL等。    如何快速替换？先来描述一下需求，比如说，目前正在用的http请求是Volle">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-02-20T12:51:21.993Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="对于有多种可替代解决方案的业务逻辑，提供一种快速更换的思路">
+<meta name="twitter:description" content="什么是“有多种可替代解决方案的业务逻辑”？举几个例子说明：    客户端的http请求操作，可以实现的方案有Retrofit、OkHttp、Volley等；   客户端的数据库存储方案可以为Realm、greenDao、OrmLite等；   图片加载的方案可以是Fresco、Glide、Picasso、UIL等。    如何快速替换？先来描述一下需求，比如说，目前正在用的http请求是Volle">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://cjw-blog.net/2016/12/11/解耦思路/"/>
+
+
+
+
+
+  <title> 对于有多种可替代解决方案的业务逻辑，提供一种快速更换的思路 | Jianwei's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jianwei's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://cjw-blog.net/2016/12/11/解耦思路/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianwei Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jianwei's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                对于有多种可替代解决方案的业务逻辑，提供一种快速更换的思路
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-11T10:37:09+08:00">
+                2016-12-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/12/11/解耦思路/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2016/12/11/解耦思路/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/12/11/解耦思路/" class="leancloud_visitors" data-flag-title="对于有多种可替代解决方案的业务逻辑，提供一种快速更换的思路">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="什么是“有多种可替代解决方案的业务逻辑”？"><a href="#什么是“有多种可替代解决方案的业务逻辑”？" class="headerlink" title="什么是“有多种可替代解决方案的业务逻辑”？"></a>什么是“有多种可替代解决方案的业务逻辑”？</h3><p>举几个例子说明：  </p>
+<ol>
+<li>客户端的http请求操作，可以实现的方案有Retrofit、OkHttp、Volley等；  </li>
+<li>客户端的数据库存储方案可以为Realm、greenDao、OrmLite等；  </li>
+<li>图片加载的方案可以是Fresco、Glide、Picasso、UIL等。  </li>
+</ol>
+<h3 id="如何快速替换？"><a href="#如何快速替换？" class="headerlink" title="如何快速替换？"></a>如何快速替换？</h3><p>先来描述一下需求，比如说，目前正在用的http请求是Volley，现在发现使用OkHttp来封装一套会更好。又比方说，目前正在用的数据存储方案是OrmLite，现在使用greenDao或者Realm会更好，在类似这些情况下，如何做到不修改Activity/Fragment/Presenter代码的情况下，把Volley的http请求实现更换成Okhttp的实现，把OrmLite更换成greenDao或者Realm？</p>
+<p>解决问题的关键词：设计模式中的——工厂方法模式。<br>本质：利用接口进行解耦。  </p>
+<p>说到这里，可能很多有经验的朋友已经会心一笑，是的，老实说这篇文章可能对老司机没有太大的意义，但是如果看到这里还是心存疑问，或者你不知道什么是工厂方法模式，也不知道如何使用接口解耦什么的，没关系，请继续往下看。  </p>
+<h3 id="Talk-is-cheap-show-me-the-code"><a href="#Talk-is-cheap-show-me-the-code" class="headerlink" title="Talk is cheap, show me the code."></a>Talk is cheap, show me the code.</h3><p>下面，我们就用Volley更换到OkHttp这个例子来说明一下如何做到不修改Activity/Fragment/Presenter的代码情况下，更快地更换业务逻辑实现的代码。  </p>
+<p>在开始之前先来思考一下上述所说“可替代解决方案”的含义，为何这些方案是可替代的？是因为它们具有相同的共性，它们所要解决的问题是相同的，比如说http请求框架，无论是Volley/OkHttp/Retrofit，它们所要实现的都是http请求中的get/post/put/delete这些方法，数据库存储框架中无论是Realm/greenDao/OrmLite，它们要实现的都是增删改查这些方法。  </p>
+<p><strong>“博主你别再瞎逼逼，赶紧说重点…”</strong><br><strong>我：dalao我错了，下面说重点…</strong>  </p>
+<p>先来概括一下我们的实现思路：  </p>
+<ol>
+<li>把http请求框架的共性方法抽取到接口中，我们把这个接口称为“请求接口”；  </li>
+<li>创建一个用于返回请求结果的接口，我们把这个接口称为“回调接口”；   </li>
+<li>分别用Volley和OkHttp实现“请求接口”；  </li>
+<li>创建一个类来返回上述接口的对象，我们把这个类叫做“工厂”类；  </li>
+<li>在Activity/Fragment/Presenter中，使用“工厂”返回的这个接口对象调用get/post/put/delete方法，并在“回调接口”中得到请求结果。  </li>
+</ol>
+<p><strong>本文完整代码<a href="https://github.com/V1sk/HttpRequestExample" title="Title" target="_blank" rel="external">https://github.com/V1sk/HttpRequestExample</a>，可以先clone到本地再看文章，为了方便阅读，下文中的代码将省略非重点部分。</strong></p>
+<h4 id="Step1：把http请求框架的共性方法抽取到接口中（也就是上述说的get-post-put-delete这些方法）"><a href="#Step1：把http请求框架的共性方法抽取到接口中（也就是上述说的get-post-put-delete这些方法）" class="headerlink" title="Step1：把http请求框架的共性方法抽取到接口中（也就是上述说的get/post/put/delete这些方法）"></a>Step1：把http请求框架的共性方法抽取到接口中（也就是上述说的get/post/put/delete这些方法）</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"><span class="comment"> * 此接口提供的就是http请求通用的方法，该接口可以用Volley来实现，也能用OkHttp等其它方式来实现</span></div><div class="line"><span class="comment"> * 接口说明：</span></div><div class="line"><span class="comment"> * 	get方法参数包含一个url，以及返回数据的接口</span></div><div class="line"><span class="comment"> * 	post/put/delete方法还需要提供一个请求体参数</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IRequestManager</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">get</span><span class="params">(String url, IRequestCallback requestCallback)</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">post</span><span class="params">(String url, String requestBodyJson, IRequestCallback requestCallback)</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">put</span><span class="params">(String url, String requestBodyJson, IRequestCallback requestCallback)</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">delete</span><span class="params">(String url, String requestBodyJson, IRequestCallback requestCallback)</span></span>;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>上面的IRequestManager接口中用到的请求结果回调接口——IRequestCallback</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment"> * Created by chenjianwei on 2016/12/11.</span></div><div class="line"><span class="comment"> * 请求返回成功/失败，成功时，把服务器返回的结果回调出去，失败时回调异常信息</span></div><div class="line"><span class="comment"> * onSuccess中的参数类型，当然也可以为JSONObject，这里只是举个栗子，可按照实际需求变通</span></div><div class="line"><span class="comment"> */</span></div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IRequestCallback</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onSuccess</span><span class="params">(String response)</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Throwable throwable)</span></span>;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  至此，我们已经把数据请求的接口，以及数据返回的接口都定义好了，整理一下思绪  </p>
+<ol>
+<li>首先我们搞清楚http请求，有哪些方法，需要有哪些参数——IRequestManager；  </li>
+<li>数据返回会有什么情况？——IRequestCallback；</li>
+</ol>
+<h4 id="Step2-用Volley来实现IRequestManager这个接口"><a href="#Step2-用Volley来实现IRequestManager这个接口" class="headerlink" title="Step2:用Volley来实现IRequestManager这个接口."></a>Step2:用Volley来实现IRequestManager这个接口.</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">VolleyRequestManager</span> <span class="keyword">implements</span> <span class="title">IRequestManager</span> </span>&#123;</div><div class="line"></div><div class="line">    ...</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">get</span><span class="params">(String url, <span class="keyword">final</span> IRequestCallback requestCallback)</span> </span>&#123;</div><div class="line">        StringRequest request = <span class="keyword">new</span> StringRequest(Request.Method.GET, url,</div><div class="line">                <span class="keyword">new</span> Response.Listener&lt;String&gt;() &#123;</div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onResponse</span><span class="params">(String s)</span> </span>&#123;</div><div class="line">                        requestCallback.onSuccess(s);</div><div class="line">                    &#125;</div><div class="line">                &#125;,</div><div class="line">                <span class="keyword">new</span> Response.ErrorListener() &#123;</div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onErrorResponse</span><span class="params">(VolleyError volleyError)</span> </span>&#123;</div><div class="line">                        requestCallback.onFailure(volleyError);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        HttpRequestExampleApp.mQueue.add(request);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">post</span><span class="params">(String url, String requestBodyJson, <span class="keyword">final</span> IRequestCallback requestCallback)</span> </span>&#123;</div><div class="line">        requestWithBody(url, requestBodyJson, requestCallback, Request.Method.POST);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(String url, String requestBodyJson, <span class="keyword">final</span> IRequestCallback requestCallback)</span> </span>&#123;</div><div class="line">        requestWithBody(url, requestBodyJson, requestCallback, Request.Method.PUT);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">(String url, String requestBodyJson, <span class="keyword">final</span> IRequestCallback requestCallback)</span> </span>&#123;</div><div class="line">        requestWithBody(url, requestBodyJson, requestCallback, Request.Method.DELETE);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>VolleyRequestManager实现了IRequestManager接口，到这里我想你也看出来可以使用VolleyRequestManager来进行get/post/put/delete操作了，是的，已经可以用于请求操作，但是我们先不这样做，原因请继续往下看Step3。</p>
+<h4 id="Step3：创建一个类来返回IRequestManager请求接口的对象"><a href="#Step3：创建一个类来返回IRequestManager请求接口的对象" class="headerlink" title="Step3：创建一个类来返回IRequestManager请求接口的对象"></a>Step3：创建一个类来返回IRequestManager请求接口的对象</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"><span class="comment"> * 该类的作用是用于返回一个IRequestManager对象，这个IRequestManager的实现类</span></div><div class="line"><span class="comment"> * 可以是使用Volley实现的http请求对象，也可以是OkHttp实现的http请求对象</span></div><div class="line"><span class="comment"> * Activity/Fragment/Presenter中，只要调用getRequestManager()方法就能得到</span></div><div class="line"><span class="comment"> * http请求的操作接口，而不用关心具体是使用什么实现的。</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RequestFactory</span> </span>&#123;</div><div class="line">	</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IRequestManager <span class="title">getRequestManager</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> VolleyRequestManager.getInstance();</div><div class="line">        <span class="comment">//return OkHttpRequestManager.getInstance();</span></div><div class="line">    &#125;</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>到这里，请容许我再逼逼一下，为什么要用这种方法来返回对象，而不直接在Activity/Fragment/Presenter中创建VolleyRequestManager对象来进行操作？如果直接在Activity/Fragment/Presenter中使用VolleyRequestManager来创建对象，你的代码就依赖了VolleyRequestManager，这种情况下，如果要更换成OkHttp，岂不是要把代码中所有的VolleyRequestManager对象也更换成OkHttp的请求对象？再试想一下，如果你有很多个Activity/Fragment/Presenter使用了VolleyRequestManager对象，你是不是要每个地方都更换一遍？  </p>
+<p><strong>使用RequestFactory的方式在Activity/Fragment/Presenter中创建对象，代码只依赖了IRequestManager这个接口，这就是使用接口进行解耦的关键点，无论在什么地方使用了这个接口，当要更换实现的时候，只需要修改RequestFactory中return的实现类就可以了。</strong>  </p>
+<h4 id="Step4-调用上述方法进行测试"><a href="#Step4-调用上述方法进行测试" class="headerlink" title="Step4:调用上述方法进行测试"></a>Step4:调用上述方法进行测试</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</div><div class="line">	</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"MainActivity"</span>;</div><div class="line">	</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">        <span class="comment">//请求测试url</span></div><div class="line">        String url = <span class="string">"https://api.douban.com/v2/movie/top250"</span>;</div><div class="line">        <span class="comment">//这里发起请求依赖的是IRequestManager接口，而没有具体实现类代码出现在这里</span></div><div class="line">        IRequestManager requestManager = RequestFactory.getRequestManager();</div><div class="line">        <span class="comment">//调用接口的get方法</span></div><div class="line">        requestManager.get(url, <span class="keyword">new</span> IRequestCallback() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSuccess</span><span class="params">(String response)</span> </span>&#123;</div><div class="line">                Log.d(TAG, <span class="string">"onSuccess: "</span> + response);</div><div class="line">                <span class="comment">//// <span class="doctag">TODO:</span> 2016/12/11 your code</span></div><div class="line">            &#125;</div><div class="line">	</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Throwable throwable)</span> </span>&#123;</div><div class="line">                throwable.printStackTrace();</div><div class="line">                <span class="comment">//// <span class="doctag">TODO:</span> 2016/12/11 your code</span></div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">	</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注意我们创建请求对象的代码，这里没有出现具体的实现类：<br><strong>IRequestManager requestManager = RequestFactory.getRequestManager();</strong>  </p>
+<h4 id="Step5-不更改MainActivity中任何代码，把Http请求的逻辑替换成OkHttp来实现"><a href="#Step5-不更改MainActivity中任何代码，把Http请求的逻辑替换成OkHttp来实现" class="headerlink" title="Step5:不更改MainActivity中任何代码，把Http请求的逻辑替换成OkHttp来实现"></a>Step5:不更改MainActivity中任何代码，把Http请求的逻辑替换成OkHttp来实现</h4><p>1）先用OkHttp来实现IRequestManager这个接口.  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OkHttpRequestManager</span> <span class="keyword">implements</span> <span class="title">IRequestManager</span> </span>&#123;</div><div class="line">	</div><div class="line">    ...</div><div class="line">	</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">get</span><span class="params">(String url, IRequestCallback requestCallback)</span> </span>&#123;</div><div class="line">        Request request = <span class="keyword">new</span> Request.Builder()</div><div class="line">                .url(url)</div><div class="line">                .get()</div><div class="line">                .build();</div><div class="line">        addCallBack(requestCallback, request);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">post</span><span class="params">(String url, String requestBodyJson, IRequestCallback requestCallback)</span> </span>&#123;</div><div class="line">        RequestBody body = RequestBody.create(TYPE_JSON, requestBodyJson);</div><div class="line">        Request request = <span class="keyword">new</span> Request.Builder()</div><div class="line">                .url(url)</div><div class="line">                .post(body)</div><div class="line">                .build();</div><div class="line">        addCallBack(requestCallback, request);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(String url, String requestBodyJson, IRequestCallback requestCallback)</span> </span>&#123;</div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">(String url, String requestBodyJson, IRequestCallback requestCallback)</span> </span>&#123;</div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line">	    </div><div class="line">    ...</div><div class="line">	    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>2) 使用OkHttp更换Volley<br>现在我们用OkHttp的请求方式也实现了一套get/post/put/delete的请求方法，此时只要修改Step3中，返回的对象为OkHttpRequestManager对象，就已经完成了我们整个http请求框架的更换，此时，你可以完全移除Volley的引用以及代码，而不会对程序有任何影响。  </p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>对于有多种可替代解决方案的业务逻辑，我的解耦思路是这样的：  </p>
+<ol>
+<li>抽取它们的共性方法到接口中；  </li>
+<li>使用自己选择的实现方案去实现；  </li>
+<li>使用“工厂”类把具体实现转换成抽象接口，并返回抽象接口对象；  </li>
+<li>Activity/Fragment/Presenter中，使用“工厂”中返回的接口进行操作，而不要依赖于其实现类。  </li>
+<li>要更换方案的时候，只需要修改“工厂”中返回的实现类。</li>
+</ol>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>这篇文章只是提供一种解耦思想，而不是“如何封装http请求框架”的教程，也不是讨论“哪个http请求框架好用”的文章，当然，你完全可以用这种方法进行http请求的封装。然后，这篇文章是博主的第一篇文章，可能写得不是很好，欢迎大家提出宝贵意见。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+            <a href="/tags/奇技淫巧/" rel="tag"># 奇技淫巧</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/19/Welcome/" rel="next" title="欢迎阅读">
+                <i class="fa fa-chevron-left"></i> 欢迎阅读
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/26/AIDL/" rel="prev" title="巧用Android多进程，微信，微博等主流App都在用">
+                巧用Android多进程，微信，微博等主流App都在用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianwei Chen" />
+          <p class="site-author-name" itemprop="name">Jianwei Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stop stopping.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是“有多种可替代解决方案的业务逻辑”？"><span class="nav-number">1.</span> <span class="nav-text">什么是“有多种可替代解决方案的业务逻辑”？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何快速替换？"><span class="nav-number">2.</span> <span class="nav-text">如何快速替换？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Talk-is-cheap-show-me-the-code"><span class="nav-number">3.</span> <span class="nav-text">Talk is cheap, show me the code.</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Step1：把http请求框架的共性方法抽取到接口中（也就是上述说的get-post-put-delete这些方法）"><span class="nav-number">3.1.</span> <span class="nav-text">Step1：把http请求框架的共性方法抽取到接口中（也就是上述说的get/post/put/delete这些方法）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step2-用Volley来实现IRequestManager这个接口"><span class="nav-number">3.2.</span> <span class="nav-text">Step2:用Volley来实现IRequestManager这个接口.</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step3：创建一个类来返回IRequestManager请求接口的对象"><span class="nav-number">3.3.</span> <span class="nav-text">Step3：创建一个类来返回IRequestManager请求接口的对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step4-调用上述方法进行测试"><span class="nav-number">3.4.</span> <span class="nav-text">Step4:调用上述方法进行测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step5-不更改MainActivity中任何代码，把Http请求的逻辑替换成OkHttp来实现"><span class="nav-number">3.5.</span> <span class="nav-text">Step5:不更改MainActivity中任何代码，把Http请求的逻辑替换成OkHttp来实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结："><span class="nav-number">4.</span> <span class="nav-text">总结：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#后记"><span class="nav-number">5.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianwei Chen</span>
+</div>
+
+
+<div class="powered-by">
+  Love Android.
+</div>
+
+<div class="theme-info">
+  Rage Your Dream.
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://cjw-blog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://cjw-blog.net/2016/12/11/解耦思路/';
+          this.page.identifier = '2016/12/11/解耦思路/';
+          this.page.title = '对于有多种可替代解决方案的业务逻辑，提供一种快速更换的思路';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://cjw-blog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("cgT7AdFv2yFiv7eFvXNSaA4K-gzGzoHsz", "EIYGCbKNnEgIY19XFBBbaovd");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

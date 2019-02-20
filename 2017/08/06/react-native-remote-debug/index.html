@@ -1,0 +1,941 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="React Native,React Native技巧," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前言这篇文章的主要内容有两个：    React Native如何调试不在局域网内的设备、如何把这些设备变成在局域网内方便地调试（无论设备在4G还是Wifi的情况下）   深坑提醒：截止到发稿前华为P10最新版本系统 EMUI5.0 (Android 7.0），Style Sheet中的transform属性失效了  故事的起因一天，老师过来跟我说，咱们App聊天模块里面的列表，在一台华为P10手">
+<meta name="keywords" content="React Native,React Native技巧">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次React Native远程调试，解决只在千里之外可重现的Bug。">
+<meta property="og:url" content="http://cjw-blog.net/2017/08/06/react-native-remote-debug/index.html">
+<meta property="og:site_name" content="Jianwei&#39;s blog">
+<meta property="og:description" content="前言这篇文章的主要内容有两个：    React Native如何调试不在局域网内的设备、如何把这些设备变成在局域网内方便地调试（无论设备在4G还是Wifi的情况下）   深坑提醒：截止到发稿前华为P10最新版本系统 EMUI5.0 (Android 7.0），Style Sheet中的transform属性失效了  故事的起因一天，老师过来跟我说，咱们App聊天模块里面的列表，在一台华为P10手">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://jsh180.net/rn_server.png">
+<meta property="og:image" content="http://jsh180.net/ip_sec.jpg">
+<meta property="og:updated_time" content="2019-02-20T13:39:14.931Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="记一次React Native远程调试，解决只在千里之外可重现的Bug。">
+<meta name="twitter:description" content="前言这篇文章的主要内容有两个：    React Native如何调试不在局域网内的设备、如何把这些设备变成在局域网内方便地调试（无论设备在4G还是Wifi的情况下）   深坑提醒：截止到发稿前华为P10最新版本系统 EMUI5.0 (Android 7.0），Style Sheet中的transform属性失效了  故事的起因一天，老师过来跟我说，咱们App聊天模块里面的列表，在一台华为P10手">
+<meta name="twitter:image" content="http://jsh180.net/rn_server.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://cjw-blog.net/2017/08/06/react-native-remote-debug/"/>
+
+
+
+
+
+  <title> 记一次React Native远程调试，解决只在千里之外可重现的Bug。 | Jianwei's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jianwei's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://cjw-blog.net/2017/08/06/react-native-remote-debug/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianwei Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jianwei's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                记一次React Native远程调试，解决只在千里之外可重现的Bug。
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-06T01:13:37+08:00">
+                2017-08-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/React-Native/" itemprop="url" rel="index">
+                    <span itemprop="name">React Native</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/06/react-native-remote-debug/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/06/react-native-remote-debug/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/08/06/react-native-remote-debug/" class="leancloud_visitors" data-flag-title="记一次React Native远程调试，解决只在千里之外可重现的Bug。">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>这篇文章的主要内容有两个：  </p>
+<ol>
+<li>React Native如何调试不在局域网内的设备、如何把这些设备变成在局域网内方便地调试（无论设备在4G还是Wifi的情况下）  </li>
+<li>深坑提醒：截止到发稿前华为P10最新版本系统 EMUI5.0 (Android 7.0），Style Sheet中的transform属性失效了</li>
+</ol>
+<h3 id="故事的起因"><a href="#故事的起因" class="headerlink" title="故事的起因"></a>故事的起因</h3><p>一天，老师过来跟我说，咱们App聊天模块里面的列表，在一台华为P10手机上面显示不出来，它能发消息，别人也能看到它发的消息，但是它却连自己发的消息也看不到，是个必现的问题，让我查查这是什么幺蛾子。  </p>
+<p>嗯，这台手机不在我们这，在分公司同事手里，搞不定就自己去出差吧。😀</p>
+<h3 id="分析问题"><a href="#分析问题" class="headerlink" title="分析问题"></a>分析问题</h3><p><strong>首先想到：服务端的锅</strong><br>由于我们聊天列表的数据，客户端是不保存的，这份数据由服务端维护，客户端订阅上后，服务端会给客户端返回指定数据，于是让服务端的哥们帮忙调试，经过一轮紧张忙碌的调试，最后他告诉我：“我不知道，我这里是好的”。（老板，这只是个梗，咱们团队都是负责到底的哈哈哈）  </p>
+<p>既然如此，为了证明服务端哥们这轮调试的结论是对的，我想我最好能看这台远程手机上面的Log信息，甚至打断点去debug，看看客户端出了什么问题。</p>
+<h3 id="提出设想"><a href="#提出设想" class="headerlink" title="提出设想"></a>提出设想</h3><p>由于React Native本身就支持Debug JS Remotely，所以首先想到的，肯定是把我的机器配置到外网，然后让分公司的同事连接到我机器上就能进行调试；其本地的npm服务将会加载node_modules，然后提供8081端口给debug包的app进行请求，最终做到了动态把js代码传输到debug包的程序上。<br><img src="http://jsh180.net/rn_server.png" alt="npm服务加载" title="npm服务加载">  </p>
+<h3 id="Just-do-it"><a href="#Just-do-it" class="headerlink" title="Just do it."></a>Just do it.</h3><p>有了这个想法之后，就去找运维同学，一波操作过后，我的电脑已经可以在公网上进行访问了，二话不说，就是干：  </p>
+<ol>
+<li>提取debug apk: 当前项目下，找到 “android/app/build/outputs/apk/app-debug.apk”，如果修改过项目模块名称，自己去找回对应的路径，相信这个不会有难度；在React Native项目中，这个debug包跟release包最大的区别是：release包已经打包好了所有.js文件到assets目录中，而debug包是通过请求加载本项目js代码的npm服务来动态加载js文件；  </li>
+<li>安装debug包，运行debug程序后，在 “Dev Settings” 中设置 “Debug server host &amp; port for device” ，地址修改为自己电脑的公网ip，端口8081；  </li>
+<li>在调试菜单中，选择 “Debug JS Remotely”。  </li>
+</ol>
+<p>接下来当然就是最激动人心的时刻啦，同事的机器顺利地连上了我电脑本地的npm服务，我和运维小哥四目相视，会心一笑。然而，事情总是出乎意料，命运也喜欢捉弄人，一下秒，妹子同事说手机红屏了，在我的Chrome调试页面中打印了一行：  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Failed to execute <span class="string">'send'</span> on <span class="string">'XMLHttpRequest'</span>: Failed to load <span class="string">'http://localhost:8082/create_session'</span>  </div><div class="line">Realm failed to connect to the embedded debug server inside the app. </div><div class="line">If attempting to use Chrome debugging <span class="keyword">from</span> a device, ensure the device is reachable on the same network <span class="keyword">as</span> <span class="keyword">this</span> machine.</div></pre></td></tr></table></figure>
+<p>惊不惊喜，意不意外？  </p>
+<p>咋一看，似乎问题不大，再把我机器的8082端口打开，是不是应该就可以了？然而，事情总是出乎意料，命运也喜欢捉弄人。X妹子说，还是一样耶。然后，我在realm-js的项目下找到了这个issues: <a href="https://github.com/realm/realm-js/issues/284，这个issues已经是closed状态，但是可能因为我在非局域网调试的原因，升级到最新版本的realm-js，仍然存在。此时，默默说了一句WTF之后，我感觉整个人垮掉了。" target="_blank" rel="external">https://github.com/realm/realm-js/issues/284，这个issues已经是closed状态，但是可能因为我在非局域网调试的原因，升级到最新版本的realm-js，仍然存在。此时，默默说了一句WTF之后，我感觉整个人垮掉了。</a></p>
+<h3 id="WTF之后的思考"><a href="#WTF之后的思考" class="headerlink" title="WTF之后的思考"></a>WTF之后的思考</h3><p>注意到错误提示中的 “ensure the device is reachable on the same network as this machine” ，我又有了一个大胆的想法：<strong>让该同事的手机，跟我的电脑在同一个网段。</strong>  </p>
+<p>这…似乎还真有这么一种操作，这个世界上，有一种叫 “Virtual Private Network” 的东西（和谐和谐），假设我的电脑和该同事的手机，同时连接上我们自己的代理服务器，通过这个代理的地址，似乎就可以实现 “在同一个网段” 这个需求。</p>
+<p>电脑连接上代理后，会再分配一个地址，Mac上使用ifconfig命令查看 (Win ipconfig)：<br><img src="http://jsh180.net/ip_sec.jpg" alt="ipsec0遮挡部分" title="ipsec0遮挡部分"><br>下面这一波操作就很稳了，我们终于顺利连接到了X同时的手机，可以看到Log，也看到打断点，甚至在4G下都可以调试：  </p>
+<ol>
+<li>手机电脑都连上代理  </li>
+<li>在 “Dev Settings” 中设置 “Debug server host &amp; port for device”，修改为上面的代理地址（ipsec0遮挡部分）  </li>
+<li>在调试菜单中，选择 “Debug JS Remotely”。</li>
+</ol>
+<h3 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h3><p>到了这一步，我已经能够看到Log以及打断点进行调试，最后得出的结论是：“服务端的调试结论的确是正确，数据已经顺利拿到了，而是是正确的，长连接也没有问题”。到这里已经可以确认是客户端的锅，而且是这个页面的ListView组件的锅，因为都是用React Native的ListView，为什么其它页面没有问题？  </p>
+<p><strong>再次分析</strong><br>React Native 的 ListView 是基于 ScrollView 组件实现的，显示部分异常，应该是ListView里面的ScrollView出了问题，对比其它模块用的 ListView ，发现了一个十分可疑的地方：ListView 组件提供的 “renderScrollComponent” 属性，关于这个这个属性，官方文档是这样说的：</p>
+<blockquote>
+<p>renderScrollComponent function  </p>
+<p>(props) =&gt; renderable  </p>
+<p>指定一个函数，在其中返回一个可以滚动的组件。ListView将会在该组件内部进行渲染。默认情况下会返回一个包含指定属性的ScrollView。  </p>
+</blockquote>
+<p>简单说，这个属性可以让我们自定义ListView的滚动组件，如果不设置的话，就是一个默认的ScrollView作为ListView的滚动组件。</p>
+<p>很不凑巧，我们指定了这个属性，因为对于聊天列表，最新的消息内容需要显示在列表的最下方，于是我们使用 <a href="https://github.com/expo/react-native-invertible-scroll-view" title="react-native-invertible-scroll-view" target="_blank" rel="external">react-native-invertible-scroll-view</a>  这个第三方库，将这个默认的ScrollView翻转了过来，实现了新消息一直在底部，有新消息也直接滚动到最底部这样的效果（类似：<a href="https://github.com/FaridSafi/react-native-gifted-chat" title="react-native-gifted-chat" target="_blank" rel="external">react-native-gifted-chat</a>）。  </p>
+<p><strong>证实猜想</strong><br>要证明上面的猜想很简单，直接去掉ListView中指定的的 renderScrollComponent 方法，然后刷新界面。X同事说：“显示出来了，不过方向是反的”。  </p>
+<p><strong>解决问题</strong><br>我们看看这个库是如何将ScrollView翻转过来的，找到核心文件 ‘InvertibleScrollView.js’ ，看到关键代码：  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> styles = StyleSheet.create(&#123;</div><div class="line">  verticallyInverted: &#123;</div><div class="line">    flex: <span class="number">1</span>,</div><div class="line">    transform: [</div><div class="line">      &#123; <span class="attr">scaleY</span>: <span class="number">-1</span> &#125;,</div><div class="line">    ],</div><div class="line">  &#125;,</div><div class="line">  horizontallyInverted: &#123;</div><div class="line">    flex: <span class="number">1</span>,</div><div class="line">    transform: [</div><div class="line">      &#123; <span class="attr">scaleX</span>: <span class="number">-1</span> &#125;,</div><div class="line">    ],</div><div class="line">  &#125;,</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>到这里已经一切了然，这货使用 transform 属性，在垂直/水平方向上翻转分别使用：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">transform: [ &#123; <span class="attr">scaleY</span>: <span class="number">-1</span> &#125; ] <span class="comment">//垂直翻转</span></div><div class="line">    </div><div class="line">transform: [ &#123; <span class="attr">scaleX</span>: <span class="number">-1</span> &#125; ] <span class="comment">//水平翻转</span></div></pre></td></tr></table></figure>
+<p>到这里已经确诊了，transform 在P10上出问题了，这个问题也可以在 React Native 的 issues 上找到：  </p>
+<ol>
+<li><a href="https://github.com/expo/react-native-invertible-scroll-view/issues/47" target="_blank" rel="external">react-native-invertible-scroll-view not working on Huawei Android 7 devices.</a>  </li>
+<li><a href="https://github.com/facebook/react-native/pull/14646" target="_blank" rel="external">always set camera distance on transforms, to default 1280 if 0</a>   </li>
+</ol>
+<p>目前已经确认有问题的机型如下：  </p>
+<blockquote>
+<p>FRD-AL10（honor 8） EMUI:5.0 android: 7.0<br>MHA-AL00(Mate9) EMUI:5.0 android:7.0<br>Huawei P10 VTR-L09, EMUI:5.0 Android 7.0</p>
+</blockquote>
+<p>解决方法有两种：<br>1）在transform中增加 perspective: 1280 (在我的项目里没有起效，基于 React Native 0.35)</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">transform: [ &#123; <span class="attr">scaleY</span>: <span class="number">-1</span>, <span class="attr">perspective</span>: <span class="number">1280</span> &#125; ]</div></pre></td></tr></table></figure>
+<p>2）对于Android，使用过时的 {scaleY: -1} 属性，而不是 transform: [ { scaleY: -1 } ]，iOS保持不变  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> styles = StyleSheet.create(&#123;</div><div class="line">    verticallyInverted: Platform.select(&#123;</div><div class="line">        ios: &#123;<span class="attr">transform</span>: [&#123;<span class="attr">scaleY</span>: <span class="number">-1</span>&#125;]&#125;,</div><div class="line">        android: &#123;<span class="attr">scaleY</span>: <span class="number">-1</span>&#125;,</div><div class="line">    &#125;),</div><div class="line">    horizontallyInverted: Platform.select(&#123;</div><div class="line">        ios: &#123;<span class="attr">transform</span>: [&#123;<span class="attr">scaleX</span>: <span class="number">-1</span>&#125;]&#125;,</div><div class="line">        android: &#123;<span class="attr">scaleX</span>: <span class="number">-1</span>&#125;,</div><div class="line">    &#125;),</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>最后附上修复好的翻转ScrollView: <a href="https://github.com/V1sk/react-native-invertible-scroll-view/blob/master/InvertibleScrollView.js" target="_blank" rel="external">V1sk/react-native-invertible-scroll-view</a>   </p>
+<h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><p>这一波调试过程十分曲折，希望大家不会遇到这些奇葩问题。另外，评论系统又GG了，继多说停止服务之后，网易云跟帖也停了，评论数据也清了，现在唯有用Disqus了，也是需要 Virtual Private Network 才能看到评论系统哟~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/React-Native/" rel="tag"># React Native</a>
+          
+            <a href="/tags/React-Native技巧/" rel="tag"># React Native技巧</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/26/AIDL/" rel="next" title="巧用Android多进程，微信，微博等主流App都在用">
+                <i class="fa fa-chevron-left"></i> 巧用Android多进程，微信，微博等主流App都在用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianwei Chen" />
+          <p class="site-author-name" itemprop="name">Jianwei Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stop stopping.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#故事的起因"><span class="nav-number">2.</span> <span class="nav-text">故事的起因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析问题"><span class="nav-number">3.</span> <span class="nav-text">分析问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#提出设想"><span class="nav-number">4.</span> <span class="nav-text">提出设想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Just-do-it"><span class="nav-number">5.</span> <span class="nav-text">Just do it.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WTF之后的思考"><span class="nav-number">6.</span> <span class="nav-text">WTF之后的思考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决问题"><span class="nav-number">7.</span> <span class="nav-text">解决问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结语"><span class="nav-number">8.</span> <span class="nav-text">结语</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianwei Chen</span>
+</div>
+
+
+<div class="powered-by">
+  Love Android.
+</div>
+
+<div class="theme-info">
+  Rage Your Dream.
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://cjw-blog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://cjw-blog.net/2017/08/06/react-native-remote-debug/';
+          this.page.identifier = '2017/08/06/react-native-remote-debug/';
+          this.page.title = '记一次React Native远程调试，解决只在千里之外可重现的Bug。';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://cjw-blog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("cgT7AdFv2yFiv7eFvXNSaA4K-gzGzoHsz", "EIYGCbKNnEgIY19XFBBbaovd");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

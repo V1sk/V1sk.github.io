@@ -1,0 +1,1082 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="实践应用," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前言对于进程的概念，来到这里的都是编程修仙之人，就不再啰嗦了，相信大家倒着、跳着、躺着、各种姿势都能背出来。   为什么要使用多进程，一个进程不就可以了吗？相信很多同学在实际开发中，基本都不会去给app划分进程，而且，在Android中使用多进程，还可能需要编写额外的进程通讯代码，还可能带来额外的Bug，这无疑加大了开发的工作量，在很多创业公司中工期也不允许，这导致了整个app都在一个进程中。">
+<meta name="keywords" content="实践应用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="巧用Android多进程，微信，微博等主流App都在用">
+<meta property="og:url" content="http://cjw-blog.net/2017/02/26/AIDL/index.html">
+<meta property="og:site_name" content="Jianwei&#39;s blog">
+<meta property="og:description" content="前言对于进程的概念，来到这里的都是编程修仙之人，就不再啰嗦了，相信大家倒着、跳着、躺着、各种姿势都能背出来。   为什么要使用多进程，一个进程不就可以了吗？相信很多同学在实际开发中，基本都不会去给app划分进程，而且，在Android中使用多进程，还可能需要编写额外的进程通讯代码，还可能带来额外的Bug，这无疑加大了开发的工作量，在很多创业公司中工期也不允许，这导致了整个app都在一个进程中。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://jsh180.net/image/jpg/ps.png">
+<meta property="og:image" content="http://jsh180.net/blog_aidl_img_flow_1.jpg">
+<meta property="og:image" content="http://jsh180.net/image/jpg/blog_aidl_project_struct.jpg">
+<meta property="og:image" content="http://jsh180.net/blog_aidl_img_log_1.jpeg">
+<meta property="og:image" content="http://jsh180.net/image/jpg/blog_img_gaoshi.jpg">
+<meta property="og:image" content="http://jsh180.net/image/jpg/blog_aidl_flowchart.jpg">
+<meta property="og:updated_time" content="2019-02-20T12:49:34.314Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="巧用Android多进程，微信，微博等主流App都在用">
+<meta name="twitter:description" content="前言对于进程的概念，来到这里的都是编程修仙之人，就不再啰嗦了，相信大家倒着、跳着、躺着、各种姿势都能背出来。   为什么要使用多进程，一个进程不就可以了吗？相信很多同学在实际开发中，基本都不会去给app划分进程，而且，在Android中使用多进程，还可能需要编写额外的进程通讯代码，还可能带来额外的Bug，这无疑加大了开发的工作量，在很多创业公司中工期也不允许，这导致了整个app都在一个进程中。">
+<meta name="twitter:image" content="http://jsh180.net/image/jpg/ps.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://cjw-blog.net/2017/02/26/AIDL/"/>
+
+
+
+
+
+  <title> 巧用Android多进程，微信，微博等主流App都在用 | Jianwei's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jianwei's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://cjw-blog.net/2017/02/26/AIDL/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jianwei Chen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jianwei's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                巧用Android多进程，微信，微博等主流App都在用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-26T00:12:32+08:00">
+                2017-02-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/26/AIDL/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/02/26/AIDL/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/02/26/AIDL/" class="leancloud_visitors" data-flag-title="巧用Android多进程，微信，微博等主流App都在用">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>对于进程的概念，来到这里的都是编程修仙之人，就不再啰嗦了，相信大家倒着、跳着、躺着、各种姿势都能背出来。  </p>
+<h3 id="为什么要使用多进程，一个进程不就可以了吗？"><a href="#为什么要使用多进程，一个进程不就可以了吗？" class="headerlink" title="为什么要使用多进程，一个进程不就可以了吗？"></a>为什么要使用多进程，一个进程不就可以了吗？</h3><p>相信很多同学在实际开发中，基本都不会去给app划分进程，而且，在Android中使用多进程，还可能需要编写额外的进程通讯代码，还可能带来额外的Bug，这无疑加大了开发的工作量，在很多创业公司中工期也不允许，这导致了整个app都在一个进程中。  </p>
+<p><strong>整个app都在一个进程有什么弊端？</strong><br>在Android中，虚拟机分配给各个进程的运行内存是有限制值的（这个值可以是32M，48M，64M等，根据机型而定），试想一下，如果在app中，增加了一个很常用的图片选择模块用于上传图片或者头像，加载大量Bitmap会使app的内存占用迅速增加，如果你还把查看过的图片缓存在了内存中，那么OOM的风险将会大大增加，如果此时还需要使用WebView加载一波网页，我就问你怕不怕！</p>
+<p><strong>微信，微博等主流app是如何解决这些问题的？</strong><br>微信移动开发团队在 <a href="https://mp.weixin.qq.com/s?__biz=MzAwNDY1ODY2OQ==&amp;mid=400656149&amp;idx=1&amp;sn=122b4f4965fafebf78ec0b4fce2ef62a&amp;mpshare=1&amp;scene=1&amp;srcid=0501f6p8yRsM5qj6OBKEVY1T&amp;key=16e063fbfd27c52cdf5c92791e0542126da55aeb373dcd13df6aa6c417ec61127af2618384b2201ffa7c918e4bbe6780b4d20d3e2ec989af4e2ec3adfda18308cac9706ac4f970ae73fb86211c44b7c2&amp;ascene=0&amp;uin=ODExMTkxNjU%3D&amp;devicetype=iMac+MacBookPro11%2C2+OSX+OSX+10.12.3+build&amp;version=12020510&amp;nettype=WIFI&amp;fontScale=100&amp;pass_ticket=AxhG0QxjCX8weF512sU8ttFb%2B7z%2B8JxvShlgh7diOtM%3D" title="《Android内存优化杂谈》" target="_blank" rel="external">《Android内存优化杂谈》</a> 一文中就说到：“对于webview，图库等，由于存在内存系统泄露或者占用内存过多的问题，我们可以采用单独的进程。微信当前也会把它们放在单独的tools进程中”。  </p>
+<p>下面我们使用adb查看一下微信和微博的进程信息（Android 5.0以下版本可直接在“设置 -&gt; 应用程序”相关条目中查看）：  </p>
+<p><center><img src="http://jsh180.net/image/jpg/ps.png" alt=""></center><br><strong>进入adb shell后，使用 “ps | grep 条目名称” 可以过滤出想要查看的进程。</strong><br>可以看到，微信的确有一个tools进程，而新浪微博也有image相关的进程，而且它们当中还有好些其它的进程，比如微信的push进程，微博的remote进程等，这里可以看出，他们不单单只是把上述的WebView、图库等放到单独的进程，还有推送服务等也是运行在独立的进程中的。一个消息推送服务，为了保证稳定性，可能需要和UI进程分离，分离后即使UI进程退出、Crash或者出现内存消耗过高等情况，仍不影响消息推送服务。  </p>
+<p><strong>可见，合理使用多进程不仅仅是有多大好处的问题，我个人认为而且是很有必要的。</strong>  </p>
+<p><strong>所以说，我们最好还是根据自身情况，考虑一下是否需要拆分进程。这也是本文的初衷：给大家提供一个多进程的参考思路，在遇到上述问题和场景的时候，可以考虑用多进程的方法来解决问题，又或者，在面试的时候，跟面试官聊到这方面的知识时候也不至于尴尬。</strong>  </p>
+<h3 id="为什么需要“跨进程通讯”？"><a href="#为什么需要“跨进程通讯”？" class="headerlink" title="为什么需要“跨进程通讯”？"></a>为什么需要“跨进程通讯”？</h3><p>Android的进程与进程之间通讯，有些不需要我们额外编写通讯代码，例如：把选择图片模块放到独立的进程，我们仍可以使用startActivityForResult方法，将选中的图片放到Bundle中，使用Intent传递即可。（看到这里，你还不打算把你项目的图片选择弄到独立进程么？）</p>
+<p>但是对于把“消息推送Service”放到独立的进程，这个业务就稍微复杂点了，这个时候可能会发生Activity跟Service传递对象，调用Service方法等一系列复杂操作。</p>
+<p>由于各个进程运行在相对独立的内存空间，所以它们是不能直接通讯的，因为程序里的变量、对象等初始化后都是具有内存地址的，举个简单的例子，读取一个变量的值，本质是找到变量的内存地址，取出存放的值。不同的进程，运行在相互独立的内存（其实就可以理解为两个不同的应用程序），显然不能直接得知对方变量、对象的内存地址，这样的话也自然不能访问对方的变量，对象等。此时两个进程进行交互，就需要使用跨进程通讯的方式去实现。简单说，跨进程通讯就是一种让进程与进程之间可以进行交互的技术。  </p>
+<h3 id="跨进程通讯的方式有哪些？"><a href="#跨进程通讯的方式有哪些？" class="headerlink" title="跨进程通讯的方式有哪些？"></a>跨进程通讯的方式有哪些？</h3><ol>
+<li>四大组件间传递Bundle;</li>
+<li>使用文件共享方式，多进程读写一个相同的文件，获取文件内容进行交互；</li>
+<li>使用Messenger，一种轻量级的跨进程通讯方案，底层使用AIDL实现（实现比较简单，博主开始本文前也想了一下是否要说一下这个东西，最后还是觉得没有这个必要，Google一下就能解决的问题，就不啰嗦了）；</li>
+<li>使用AIDL(Android Interface Definition Language)，Android接口定义语言，用于定义跨进程通讯的接口；</li>
+<li>使用ContentProvider，常用于多进程共享数据，比如系统的相册，音乐等，我们也可以通过ContentProvider访问到；</li>
+<li>使用Socket传输数据。  </li>
+</ol>
+<p>接下来本文将重点介绍使用AIDL进行多进程通讯，因为AIDL是Android提供给我们的标准跨进程通讯API，非常灵活且强大（貌似面试也经常会问到，但是真正用到的也不多…）。上面所说的Messenger也是使用AIDL实现的一种跨进程方式，Messenger顾名思义，就像是一种串行的消息机制，它是一种轻量级的IPC方案，可以在不同进程中传递Message对象，我们在Message中放入需要传递的数据即可轻松实现进程间通讯。但是当我们需要调用服务端方法，或者存在并发请求，那么Messenger就不合适了。而四大组件传递Bundle，这个就不需要解释了，把需要传递的数据，用Intent封装起来传递即可，其它方式不在本文的讨论范围。  </p>
+<p><strong>下面开始对AIDL的讲解，各位道友准备好渡劫了吗？</strong>  </p>
+<h3 id="使用AIDL实现一个多进程消息推送"><a href="#使用AIDL实现一个多进程消息推送" class="headerlink" title="使用AIDL实现一个多进程消息推送"></a>使用AIDL实现一个多进程消息推送</h3><p>像图片选择这样的多进程需求，可能并不需要我们额外编写进程通讯的代码，使用四大组件传输Bundle就行了，但是像推送服务这种需求，进程与进程之间需要高度的交互，此时就绕不过进程通讯这一步了。<br>下面我们就用即时聊天软件为例，手动去实现一个多进程的推送例子，具体需求如下：  </p>
+<ol>
+<li>UI和消息推送的Service分两个进程；  </li>
+<li>UI进程用于展示具体的消息数据，把用户发送的消息，传递到消息Service，然后发送到远程服务器；  </li>
+<li>Service负责收发消息，并和远程服务器保持长连接，UI进程可通过Service发送消息到远程服务器，Service收到远程服务器消息通知UI进程；  </li>
+<li>即使UI进程退出了，Service仍需要保持运行，收取服务器消息。</li>
+</ol>
+<h3 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h3><p>先来整理一下实现思路：  </p>
+<ol>
+<li>创建UI进程（下文统称为客户端）；  </li>
+<li>创建消息Service（下文统称为服务端）；  </li>
+<li>把服务端配置到独立的进程(AndroidManifest.xml中指定process标签)；  </li>
+<li>客户端和服务端进行绑定（bindService）；  </li>
+<li>让客户端和服务端具备交互的能力。(AIDL使用)  </li>
+</ol>
+<h3 id="例子具体实现"><a href="#例子具体实现" class="headerlink" title="例子具体实现"></a>例子具体实现</h3><p><strong>为了阅读方便，下文中代码将省略非重点部分，可以把本文完整代码Clone到本地再看文章：</strong><br><strong><a href="https://github.com/V1sk/AIDL" title="AIDL Example" target="_blank" rel="external">https://github.com/V1sk/AIDL</a></strong></p>
+<h4 id="Step0-AIDL调用流程概览"><a href="#Step0-AIDL调用流程概览" class="headerlink" title="Step0. AIDL调用流程概览"></a>Step0. AIDL调用流程概览</h4><p>开始之前，我们先来概括一下使用AIDL进行多进程调用的整个流程：  </p>
+<ol>
+<li>客户端使用bindService方法绑定服务端；  </li>
+<li>服务端在onBind方法返回Binder对象；  </li>
+<li>客户端拿到服务端返回的Binder对象进行跨进程方法调用；<br><center><img src="http://jsh180.net/blog_aidl_img_flow_1.jpg" alt="AIDL调用过程" title="AIDL调用过程"></center><br><strong>整个AIDL调用过程概括起来就以上3个步骤，下文中我们使用上面描述的例子，来逐步分解这些步骤，并讲述其中的细节。</strong></li>
+</ol>
+<h4 id="Step1-客户端使用bindService方法绑定服务端"><a href="#Step1-客户端使用bindService方法绑定服务端" class="headerlink" title="Step1.客户端使用bindService方法绑定服务端"></a>Step1.客户端使用bindService方法绑定服务端</h4><h5 id="1-1-创建客户端和服务端，把服务端配置到另外的进程"><a href="#1-1-创建客户端和服务端，把服务端配置到另外的进程" class="headerlink" title="1.1 创建客户端和服务端，把服务端配置到另外的进程"></a>1.1 创建客户端和服务端，把服务端配置到另外的进程</h5><ol>
+<li>创建客户端 -&gt; MainActivity；  </li>
+<li>创建服务端 -&gt; MessageService;  </li>
+<li>把服务端配置到另外的进程 -&gt; android:process=”:remote”  </li>
+</ol>
+<p>上面描述的客户端、服务端、以及把服务端配置到另外进程，体现在AndroidManifest.xml中，如下所示：  </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">...</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">application</span> <span class="attr">...</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">".ui.MainActivity"</span>/&gt;</span></div><div class="line"></div><div class="line">        <span class="tag">&lt;<span class="name">service</span></span></div><div class="line"><span class="tag">            <span class="attr">android:name</span>=<span class="string">".service.MessageService"</span></span></div><div class="line"><span class="tag">            <span class="attr">android:enabled</span>=<span class="string">"true"</span></span></div><div class="line"><span class="tag">            <span class="attr">android:exported</span>=<span class="string">"true"</span></span></div><div class="line"><span class="tag">            <span class="attr">android:process</span>=<span class="string">":remote"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>开启多进程的方法很简单，只需要给四大组件指定android:process标签。  </p>
+<h5 id="1-2-绑定MessageService到MainActivity"><a href="#1-2-绑定MessageService到MainActivity" class="headerlink" title="1.2 绑定MessageService到MainActivity"></a>1.2 绑定MessageService到MainActivity</h5><p><strong>创建MessageService</strong><br>此时的MessageService就是刚创建的模样，onBind中返回了null，下一步中我们将返回一个可操作的对象给客户端。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MessageService</span><span class="params">()</span> </span>&#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>客户端MainActivity调用bindService方法绑定MessageService</strong><br>这一步其实是属于Service组件相关的知识，在这里就比较简单地说一下，启动服务可以通过以下两种方式：  </p>
+<ol>
+<li>使用bindService方法 -&gt; bindService(Intent service, ServiceConnection conn, int flags)；  </li>
+<li>使用startService方法 -&gt; startService(Intent service);  </li>
+</ol>
+<p>bindService &amp; startService区别：<br>使用bindService方式，多个Client可以同时bind一个Service，但是当所有Client unbind后，Service会退出，通常情况下，如果希望和Service交互，一般使用bindService方法，使用onServiceConnected中的IBinder对象可以和Service进行交互，不需要和Service交互的情况下，使用startService方法即可。  </p>
+<p>正如上面所说，我们是要和Service交互的，所以我们需要使用bindService方法，但是我们希望unbind后Service仍保持运行，这样的情况下，可以同时调用bindService和startService（比如像本例子中的消息服务，退出UI进程，Service仍需要接收到消息），代码如下：   </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"MainActivity"</span>;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">        setupService();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * unbindService</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</div><div class="line">        unbindService(serviceConnection);</div><div class="line">        <span class="keyword">super</span>.onDestroy();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * bindService &amp; startService</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">setupService</span><span class="params">()</span> </span>&#123;</div><div class="line">        Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, MessageService.class);</div><div class="line">        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);</div><div class="line">        startService(intent);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ServiceConnection serviceConnection = <span class="keyword">new</span> ServiceConnection() &#123;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</div><div class="line">            Log.d(TAG, <span class="string">"onServiceConnected"</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName name)</span> </span>&#123;</div><div class="line">            Log.d(TAG, <span class="string">"onServiceDisconnected"</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="Stpe2-服务端在onBind方法返回Binder对象"><a href="#Stpe2-服务端在onBind方法返回Binder对象" class="headerlink" title="Stpe2.服务端在onBind方法返回Binder对象"></a>Stpe2.服务端在onBind方法返回Binder对象</h4><h5 id="2-1-首先，什么是Binder"><a href="#2-1-首先，什么是Binder" class="headerlink" title="2.1 首先，什么是Binder?"></a>2.1 首先，什么是Binder?</h5><p>要说Binder，首先要说一下IBinder这个接口，IBinder是远程对象的基础接口，轻量级的远程过程调用机制的核心部分，该接口描述了与远程对象交互的抽象协议，而Binder实现了IBinder接口，简单说，Binder就是Android SDK中内置的一个多进程通讯实现类，在使用的时候，我们不用也不要去实现IBinder，而是继承Binder这个类即可实现多进程通讯。 </p>
+<h5 id="2-2-其次，这个需要在onBind方法返回的Binder对象从何而来？"><a href="#2-2-其次，这个需要在onBind方法返回的Binder对象从何而来？" class="headerlink" title="2.2 其次，这个需要在onBind方法返回的Binder对象从何而来？"></a>2.2 其次，这个需要在onBind方法返回的Binder对象从何而来？</h5><p><strong>在这里就要引出本文中的主题了——AIDL</strong><br>多进程中使用的Binder对象，一般通过我们定义好的 .adil 接口文件自动生成，当然你可以走野路子，直接手动编写这个跨进程通讯所需的Binder类，其本质无非就是一个继承了Binder的类，鉴于野路子走起来麻烦，而且都是重复步骤的工作，Google提供了 AIDL 接口来帮我们自动生成Binder这条正路，下文中我们围绕 AIDL 这条正路继续展开讨论（可不能把人给带偏了是吧🙃）</p>
+<h5 id="2-3-定义AIDL接口"><a href="#2-3-定义AIDL接口" class="headerlink" title="2.3 定义AIDL接口"></a>2.3 定义AIDL接口</h5><p>很明显，接下来我们需要搞一波上面说的Binder，让客户端可以调用到服务端的方法，而这个Binder又是通过AIDL接口自动生成，那我们就先从AIDL搞起，搞之前先看看注意事项，以免出事故：  </p>
+<p>AIDL支持的数据类型：  </p>
+<ul>
+<li>Java 编程语言中的所有基本数据类型（如 int、long、char、boolean 等等）  </li>
+<li>String和CharSequence  </li>
+<li>Parcelable：实现了Parcelable接口的对象  </li>
+<li>List：其中的元素需要被AIDL支持，另一端实际接收的具体类始终是 ArrayList，但生成的方法使用的是 List 接口  </li>
+<li>Map：其中的元素需要被AIDL支持，包括 key 和 value，另一端实际接收的具体类始终是 HashMap，但生成的方法使用的是 Map 接口  </li>
+</ul>
+<p>其他注意事项：  </p>
+<ul>
+<li>在AIDL中传递的对象，必须实现Parcelable序列化接口；  </li>
+<li>在AIDL中传递的对象，需要在类文件相同路径下，创建同名、但是后缀为.aidl的文件，并在文件中使用parcelable关键字声明这个类；  </li>
+<li>跟普通接口的区别：只能声明方法，不能声明变量；</li>
+<li>所有非基础数据类型参数都需要标出数据走向的方向标记。可以是 in、out 或 inout，基础数据类型默认只能是 in，不能是其他方向。   </li>
+</ul>
+<p>下面继续我们的例子，开始对AIDL的讲解~</p>
+<h5 id="2-4-创建一个AIDL接口，接口中提供发送消息的方法（Android-Studio创建AIDL：项目右键-gt-New-gt-AIDL-gt-AIDL-File），代码如下："><a href="#2-4-创建一个AIDL接口，接口中提供发送消息的方法（Android-Studio创建AIDL：项目右键-gt-New-gt-AIDL-gt-AIDL-File），代码如下：" class="headerlink" title="2.4 创建一个AIDL接口，接口中提供发送消息的方法（Android Studio创建AIDL：项目右键 -&gt; New -&gt; AIDL -&gt; AIDL File），代码如下："></a>2.4 创建一个AIDL接口，接口中提供发送消息的方法（Android Studio创建AIDL：项目右键 -&gt; New -&gt; AIDL -&gt; AIDL File），代码如下：</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.example.aidl;</div><div class="line"><span class="keyword">import</span> com.example.aidl.data.MessageModel;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">MessageSender</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(in MessageModel messageModel)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>一个比较尴尬的事情，看了很多文章，从来没有一篇能说清楚in、out、inout这三个参数方向的意义，后来在stackoverflow上找到比较能理解的答案（<a href="http://stackoverflow.com/questions/4700225/in-out-inout-in-a-aidl-interface-parameter-value" title="AIDL Example" target="_blank" rel="external">stackoverflow原文链接</a>），我翻译一下大概意思：<br>被“in”标记的参数，就是接收实际数据的参数，这个跟我们普通参数传递一样的含义。在AIDL中，“out” 指定了一个仅用于输出的参数，换而言之，这个参数不关心调用方传递了什么数据过来，但是这个参数的值可以在方法被调用后填充（无论调用方传递了什么值过来，在方法执行的时候，这个参数的初始值总是空的），这就是“out”的含义，仅用于输出。而“inout”显然就是“in”和“out”的合体了，输入和输出的参数。区分“in”、“out”有什么用？这是非常重要的，因为每个参数的内容必须编组（序列化，传输，接收和反序列化）。in/out标签允许Binder跳过编组步骤以获得更好的性能。  </p>
+<p>上述的MessageModel为消息的实体类，该类在AIDL中传递，实现了Parcelable序列化接口，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageModel</span> <span class="keyword">implements</span> <span class="title">Parcelable</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String from;</div><div class="line">    <span class="keyword">private</span> String to;</div><div class="line">    <span class="keyword">private</span> String content;</div><div class="line"></div><div class="line">    ...</div><div class="line">    Setter &amp; Getter</div><div class="line">    ...</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">describeContents</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//...</span></div><div class="line">    序列化相关代码</div><div class="line">    <span class="comment">//...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>手动实现Parcelable接口比较麻烦，安利一款AS自动生成插件<a href="https://github.com/mcharmas/android-parcelable-intellij-plugin" title="android-parcelable-intellij-plugin" target="_blank" rel="external">android-parcelable-intellij-plugin</a><br>创建完MessageModel这个实体类，别忘了还有一件事要做：”在AIDL中传递的对象，需要在类文件相同路径下，创建同名、但是后缀为.aidl的文件，并在文件中使用parcelable关键字声明这个类“。代码如下：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.example.aidl.data;</div><div class="line"></div><div class="line">parcelable MessageModel;</div></pre></td></tr></table></figure>
+<p>对于没有接触过aidl的同学，光说就能让人懵逼，来看看此时的项目结构压压惊：<br><img src="http://jsh180.net/image/jpg/blog_aidl_project_struct.jpg" alt="项目结构" title="项目结构"><br>我们刚刚新增的3个文件：  </p>
+<ul>
+<li>MessageSender.aidl -&gt; 定义了发送消息的方法，会自动生成名为MessageSender.Stub的Binder类，在服务端实现，返回给客户端调用  </li>
+<li>MessageModel.java -&gt; 消息实体类，由客户端传递到服务端，实现了Parcelable序列化  </li>
+<li>MessageModel.aidl -&gt; 声明了MessageModel可在AIDL中传递，放在跟MessageModel.java相同的包路径下  </li>
+</ul>
+<p>OK，相信此时懵逼已解除~</p>
+<h5 id="2-5-在服务端创建MessageSender-aidl这个AIDL接口自动生成的Binder对象，并返回给客户端调用，服务端MessageService代码如下："><a href="#2-5-在服务端创建MessageSender-aidl这个AIDL接口自动生成的Binder对象，并返回给客户端调用，服务端MessageService代码如下：" class="headerlink" title="2.5 在服务端创建MessageSender.aidl这个AIDL接口自动生成的Binder对象，并返回给客户端调用，服务端MessageService代码如下："></a>2.5 在服务端创建MessageSender.aidl这个AIDL接口自动生成的Binder对象，并返回给客户端调用，服务端MessageService代码如下：</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"MessageService"</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MessageService</span><span class="params">()</span> </span>&#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    IBinder messageSender = <span class="keyword">new</span> MessageSender.Stub() &#123;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(MessageModel messageModel)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</div><div class="line">            Log.d(TAG, <span class="string">"messageModel: "</span> + messageModel.toString());</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> messageSender;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>MessageSender.Stub是Android Studio根据我们MessageSender.aidl文件自动生成的Binder对象（至于是怎样生成的，下文会有答案），我们需要把这个Binder对象返回给客户端。  </p>
+<h5 id="2-6-客户端拿到Binder对象后调用远程方法"><a href="#2-6-客户端拿到Binder对象后调用远程方法" class="headerlink" title="2.6 客户端拿到Binder对象后调用远程方法"></a>2.6 客户端拿到Binder对象后调用远程方法</h5><p>调用步骤如下：  </p>
+<ol>
+<li>在客户端的onServiceConnected方法中，拿到服务端返回的Binder对象；  </li>
+<li>使用MessageSender.Stub.asInterface方法，取得MessageSender.aidl对应的操作接口；  </li>
+<li>取得MessageSender对象后，像普通接口一样调用方法即可。  </li>
+</ol>
+<p>此时客户端代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> MessageSender messageSender; </div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">        setupService();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//...</span></div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">setupService</span><span class="params">()</span> </span>&#123;</div><div class="line">        Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, MessageService.class);</div><div class="line">        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);</div><div class="line">        startService(intent);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ServiceConnection serviceConnection = <span class="keyword">new</span> ServiceConnection() &#123;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</div><div class="line">            <span class="comment">//使用asInterface方法取得AIDL对应的操作接口</span></div><div class="line">            messageSender = MessageSender.Stub.asInterface(service);</div><div class="line"></div><div class="line">            <span class="comment">//生成消息实体对象</span></div><div class="line">            MessageModel messageModel = <span class="keyword">new</span> MessageModel();</div><div class="line">            messageModel.setFrom(<span class="string">"client user id"</span>);</div><div class="line">            messageModel.setTo(<span class="string">"receiver user id"</span>);</div><div class="line">            messageModel.setContent(<span class="string">"This is message content"</span>);</div><div class="line"></div><div class="line">            <span class="comment">//调用远程Service的sendMessage方法，并传递消息实体对象</span></div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                messageSender.sendMessage(messageModel);</div><div class="line">            &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName name)</span> </span>&#123;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在客户端中我们调用了MessageSender的sendMessage方法，向服务端发送了一条消息，并把生成的MessageModel对象作为参数传递到了服务端，最终服务端打印的结果如下：  </p>
+<p><center><img src="http://jsh180.net/blog_aidl_img_log_1.jpeg" alt="log"></center><br>这里有两点要说：  </p>
+<ol>
+<li>服务端已经接收到客户端发送过来的消息，并正确打印；  </li>
+<li>服务端和客户端区分两个进程，PID不一样，进程名也不一样；  </li>
+</ol>
+<p>到这里，我们已经完成了最基本的使用AIDL进行跨进程方法调用，也是Step.0的整个细化过程，可以再回顾一下Step.0，既然已经学会使用了，接下来…全剧终。。。</p>
+<p><center><img src="http://jsh180.net/image/jpg/blog_img_gaoshi.jpg" alt=""></center><br>如果写到这里全剧终，那跟咸鱼有什么区别…</p>
+<h3 id="知其然，知其所以然。"><a href="#知其然，知其所以然。" class="headerlink" title="知其然，知其所以然。"></a>知其然，知其所以然。</h3><p>我们通过上述的调用流程，看看从客户端到服务端，都经历了些什么事，看看Binder的上层是如何工作的，至于Binder的底层，这是一个非常复杂的话题，本文不深究。（如果看到这里你又想问什么是Binder的话，请手动倒带往上看…）  </p>
+<p>我们先来回顾一下从客户端发起的调用流程：  </p>
+<ol>
+<li>MessageSender messageSender = MessageSender.Stub.asInterface(service);  </li>
+<li>messageSender.sendMessage(messageModel);  </li>
+</ol>
+<p>抛开其它无关代码，客户端调跨进程方法就这两个步骤，而这两个步骤都封装在 MessageSender.aidl 最终生成的 MessageSender.java 源码（具体路径为：build目录下某个子目录，自己找，不爽你来打我啊 😋 ）  </p>
+<p>请看下方代码和注释，前方高能预警…</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MessageSender</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">IInterface</span> </span>&#123;</div><div class="line">   </div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Stub</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">com</span>.<span class="title">example</span>.<span class="title">aidl</span>.<span class="title">MessageSender</span> </span>&#123;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String DESCRIPTOR = <span class="string">"com.example.aidl.MessageSender"</span>;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line"><span class="comment">         * 把IBinder对象转换为 com.example.aidl.MessageSender 接口</span></div><div class="line"><span class="comment">         * 判断IBinder是否处于相同进程，相同进程返回Stub实现的com.example.aidl.MessageSender接口</span></div><div class="line"><span class="comment">         * 不同进程，则返回Stub.Proxy实现的com.example.aidl.MessageSender接口</span></div><div class="line"><span class="comment">         */</span></div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> com.example.aidl.<span class="function">MessageSender <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> ((obj == <span class="keyword">null</span>)) &#123;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">            &#125;</div><div class="line">            android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</div><div class="line">            <span class="keyword">if</span> (((iin != <span class="keyword">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> com.example.aidl.MessageSender))) &#123;</div><div class="line">                <span class="keyword">return</span> ((com.example.aidl.MessageSender) iin);</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">new</span> com.example.aidl.MessageSender.Stub.Proxy(obj);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line"><span class="comment">         * 同一进程时，不会触发</span></div><div class="line"><span class="comment">         *</span></div><div class="line"><span class="comment">         * 不同进程时，asInterface会返回Stub.Proxy，客户端调用 messageSender.sendMessage(messageModel)</span></div><div class="line"><span class="comment">         * 实质是调用了 Stub.Proxy 的 sendMessage 方法，从而触发跨进程数据传递，</span></div><div class="line"><span class="comment">         * 最终Binder底层将处理好的数据回调到此方法，并调用我们真正的sendMessage方法</span></div><div class="line"><span class="comment">         */</span></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, android.os.Parcel data, android.os.Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">            <span class="keyword">switch</span> (code) &#123;</div><div class="line">                <span class="keyword">case</span> INTERFACE_TRANSACTION: &#123;</div><div class="line">                    reply.writeString(DESCRIPTOR);</div><div class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">case</span> TRANSACTION_sendMessage: &#123;</div><div class="line">                    data.enforceInterface(DESCRIPTOR);</div><div class="line">                    com.example.aidl.data.MessageModel _arg0;</div><div class="line">                    <span class="keyword">if</span> ((<span class="number">0</span> != data.readInt())) &#123;</div><div class="line">                        _arg0 = com.example.aidl.data.MessageModel.CREATOR.createFromParcel(data);</div><div class="line">                    &#125; <span class="keyword">else</span> &#123;</div><div class="line">                        _arg0 = <span class="keyword">null</span>;</div><div class="line">                    &#125;</div><div class="line">                    <span class="keyword">this</span>.sendMessage(_arg0);</div><div class="line">                    reply.writeNoException();</div><div class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">com</span>.<span class="title">example</span>.<span class="title">aidl</span>.<span class="title">MessageSender</span> </span>&#123;</div><div class="line">            <span class="keyword">private</span> android.os.IBinder mRemote;</div><div class="line"></div><div class="line">            Proxy(android.os.IBinder remote) &#123;</div><div class="line">                mRemote = remote;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">/**</span></div><div class="line"><span class="comment">             * Proxy中的sendMessage方法，并不是直接调用我们定义的sendMessage方法，而是经过一顿的Parcel读写，</span></div><div class="line"><span class="comment">             * 然后调用mRemote.transact方法，把数据交给Binder处理，transact处理完毕后会调用上方的onTransact方法，</span></div><div class="line"><span class="comment">             * onTransact拿到最终得到的参数数据，调用由我们真正的sendMessage方法</span></div><div class="line"><span class="comment">             */</span></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(com.example.aidl.data.MessageModel messageModel)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">                android.os.Parcel _data = android.os.Parcel.obtain();</div><div class="line">                android.os.Parcel _reply = android.os.Parcel.obtain();</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    _data.writeInterfaceToken(DESCRIPTOR);</div><div class="line">                    <span class="keyword">if</span> ((messageModel != <span class="keyword">null</span>)) &#123;</div><div class="line">                        _data.writeInt(<span class="number">1</span>);</div><div class="line">                        messageModel.writeToParcel(_data, <span class="number">0</span>);</div><div class="line">                    &#125; <span class="keyword">else</span> &#123;</div><div class="line">                        _data.writeInt(<span class="number">0</span>);</div><div class="line">                    &#125;</div><div class="line">                    <span class="comment">//调用Binder的transact方法进行多进程数据传输，处理完毕后调用上方的onTransact方法</span></div><div class="line">                    mRemote.transact(Stub.TRANSACTION_sendMessage, _data, _reply, <span class="number">0</span>);</div><div class="line">                    _reply.readException();</div><div class="line">                &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                    _reply.recycle();</div><div class="line">                    _data.recycle();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_sendMessage = (android.os.IBinder.FIRST_CALL_TRANSACTION + <span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(com.example.aidl.data.MessageModel messageModel)</span> <span class="keyword">throws</span> android.os.RemoteException</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>只看代码的话，可能会有点懵逼，相信结合代码再看下方的流程图会更好理解：</p>
+<p><center><img src="http://jsh180.net/image/jpg/blog_aidl_flowchart.jpg" alt="flow chart"></center><br>从客户端的sendMessage开始，整个AIDL的调用过程如上图所示，asInterface方法，将会判断onBind方法返回的Binder是否存处于同一进程，在同一进程中，则进行常规的方法调用，若处于不同进程，整个数据传递的过程则需要通过Binder底层去进行编组（序列化，传输，接收和反序列化），得到最终的数据后再进行常规的方法调用。  </p>
+<p><strong>敲黑板：对象跨进程传输的本质就是 序列化，传输，接收和反序列化 这样一个过程，这也是为什么跨进程传输的对象必须实现Parcelable接口</strong></p>
+<h3 id="跨进程的回调接口"><a href="#跨进程的回调接口" class="headerlink" title="跨进程的回调接口"></a>跨进程的回调接口</h3><p>在上面我们已经实现了从客户端发送消息到跨进程服务端的功能，接下来我们还需要将服务端接收到的远程服务器消息，传递到客户端。有同学估计会说：“这不就是一个回调接口的事情嘛”，设置回调接口思路是对的，但是在这里使用的回调接口有点不一样，在AIDL中传递的接口，不能是普通的接口，只能是AIDL接口，所以我们需要新建一个AIDL接口传到服务端，作为回调接口。  </p>
+<p>新建消息收取的AIDL接口MessageReceiver.aidl：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.example.aidl;</div><div class="line"><span class="keyword">import</span> com.example.aidl.data.MessageModel;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">MessageReceiver</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onMessageReceived</span><span class="params">(in MessageModel receivedMessage)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来我们把回调接口注册到服务端去，修改我们的MessageSender.aidl:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.example.aidl;</div><div class="line"><span class="keyword">import</span> com.example.aidl.data.MessageModel;</div><div class="line"><span class="keyword">import</span> com.example.aidl.MessageReceiver;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">MessageSender</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(in MessageModel messageModel)</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">registerReceiveListener</span><span class="params">(MessageReceiver messageReceiver)</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">unregisterReceiveListener</span><span class="params">(MessageReceiver messageReceiver)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>以上就是我们最终修改好的aidl接口，接下来我们需要做出对应的变更：  </p>
+<ol>
+<li>在服务端中增加MessageSender的注册和反注册接口的方法；  </li>
+<li>在客户端中实现MessageReceiver接口，并通过MessageSender注册到服务端。  </li>
+</ol>
+<p>客户端变更，修改MainActivity：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> MessageSender messageSender;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="comment">//...</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * 1.unregisterListener</span></div><div class="line"><span class="comment">     * 2.unbindService</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</div><div class="line">    	<span class="comment">//解除消息监听接口</span></div><div class="line">        <span class="keyword">if</span> (messageSender != <span class="keyword">null</span> &amp;&amp; messageSender.asBinder().isBinderAlive()) &#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                messageSender.unregisterReceiveListener(messageReceiver);</div><div class="line">            &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        unbindService(serviceConnection);</div><div class="line">        <span class="keyword">super</span>.onDestroy();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//消息监听回调接口</span></div><div class="line">    <span class="keyword">private</span> MessageReceiver messageReceiver = <span class="keyword">new</span> MessageReceiver.Stub() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onMessageReceived</span><span class="params">(MessageModel receivedMessage)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</div><div class="line">            Log.d(TAG, <span class="string">"onMessageReceived: "</span> + receivedMessage.toString());</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    ServiceConnection serviceConnection = <span class="keyword">new</span> ServiceConnection() &#123;</div><div class="line">    </div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</div><div class="line">            <span class="comment">//使用asInterface方法取得AIDL对应的操作接口</span></div><div class="line">            messageSender = MessageSender.Stub.asInterface(service);</div><div class="line">            <span class="comment">//生成消息实体对象</span></div><div class="line">            MessageModel messageModel = <span class="keyword">new</span> MessageModel();</div><div class="line">            <span class="comment">//...</span></div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                <span class="comment">//把接收消息的回调接口注册到服务端</span></div><div class="line">                messageSender.registerReceiveListener(messageReceiver);</div><div class="line">                <span class="comment">//调用远程Service的sendMessage方法，并传递消息实体对象</span></div><div class="line">                messageSender.sendMessage(messageModel);</div><div class="line">            &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName name)</span> </span>&#123;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>客户端主要有3个变更：  </p>
+<ol>
+<li>增加了messageReceiver对象，用于监听服务端的消息通知；  </li>
+<li>onServiceConnected方法中，把messageReceiver注册到Service中去；  </li>
+<li>onDestroy时候解除messageReceiver的注册。  </li>
+</ol>
+<p>下面对服务端MessageServie进行变更：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"MessageService"</span>;</div><div class="line">    <span class="keyword">private</span> AtomicBoolean serviceStop = <span class="keyword">new</span> AtomicBoolean(<span class="keyword">false</span>);</div><div class="line">    <span class="comment">//RemoteCallbackList专门用来管理多进程回调接口</span></div><div class="line">    <span class="keyword">private</span> RemoteCallbackList&lt;MessageReceiver&gt; listenerList = <span class="keyword">new</span> RemoteCallbackList&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MessageService</span><span class="params">()</span> </span>&#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    IBinder messageSender = <span class="keyword">new</span> MessageSender.Stub() &#123;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(MessageModel messageModel)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</div><div class="line">            Log.e(TAG, <span class="string">"messageModel: "</span> + messageModel.toString());</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerReceiveListener</span><span class="params">(MessageReceiver messageReceiver)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</div><div class="line">            listenerList.register(messageReceiver);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unregisterReceiveListener</span><span class="params">(MessageReceiver messageReceiver)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</div><div class="line">            listenerList.unregister(messageReceiver);</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> messageSender;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate();</div><div class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> FakeTCPTask()).start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</div><div class="line">        serviceStop.set(<span class="keyword">true</span>);</div><div class="line">        <span class="keyword">super</span>.onDestroy();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//模拟长连接，通知客户端有新消息到达</span></div><div class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">FakeTCPTask</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">while</span> (!serviceStop.get()) &#123;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    Thread.sleep(<span class="number">5000</span>);</div><div class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">                MessageModel messageModel = <span class="keyword">new</span> MessageModel();</div><div class="line">                messageModel.setFrom(<span class="string">"Service"</span>);</div><div class="line">                messageModel.setTo(<span class="string">"Client"</span>);</div><div class="line">                messageModel.setContent(String.valueOf(System.currentTimeMillis()));</div><div class="line"></div><div class="line">                <span class="comment">/**</span></div><div class="line"><span class="comment">                 * RemoteCallbackList的遍历方式</span></div><div class="line"><span class="comment">                 * beginBroadcast和finishBroadcast一定要配对使用</span></div><div class="line"><span class="comment">                 */</span></div><div class="line">                <span class="keyword">final</span> <span class="keyword">int</span> listenerCount = listenerList.beginBroadcast();</div><div class="line">                Log.d(TAG, <span class="string">"listenerCount == "</span> + listenerCount);</div><div class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; listenerCount; i++) &#123;</div><div class="line">                    MessageReceiver messageReceiver = listenerList.getBroadcastItem(i);</div><div class="line">                    <span class="keyword">if</span> (messageReceiver != <span class="keyword">null</span>) &#123;</div><div class="line">                        <span class="keyword">try</span> &#123;</div><div class="line">                            messageReceiver.onMessageReceived(messageModel);</div><div class="line">                        &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</div><div class="line">                            e.printStackTrace();</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                listenerList.finishBroadcast();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>服务端主要变更：  </p>
+<ol>
+<li>MessageSender.Stub实现了注册和反注册回调接口的方法；  </li>
+<li>增加了RemoteCallbackList来管理AIDL远程接口；  </li>
+<li>FakeTCPTask模拟了长连接通知客户端有新消息到达。（这里的长连接可以是XMPP，Mina，Mars，Netty等，这里弄个假的意思意思，有时间的话咱开个帖子聊聊XMPP）  </li>
+</ol>
+<p>这里还有一个需要讲一下的，就是RemoteCallbackList，为什么要用RemoteCallbackList，普通ArrayList不行吗？当然不行，不然干嘛又整一个RemoteCallbackList 🙃，registerReceiveListener 和 unregisterReceiveListener在客户端传输过来的对象，经过Binder处理，在服务端接收到的时候其实是一个新的对象，这样导致在 unregisterReceiveListener 的时候，普通的ArrayList是无法找到在 registerReceiveListener 时候添加到List的那个对象的，但是它们底层使用的Binder对象是同一个，RemoteCallbackList利用这个特性做到了可以找到同一个对象，这样我们就可以顺利反注册客户端传递过来的接口对象了。RemoteCallbackList在客户端进程终止后，它能自动移除客户端所注册的listener，它内部还实现了线程同步，所以我们在注册和反注册都不需要考虑线程同步，的确是个666的类。（至于使用ArrayList的幺蛾子现象，大家可以自己试试，篇幅问题，这里就不演示了）</p>
+<p><strong>到此，服务端通知客户端相关的代码也写完了，运行结果无非就是正确打印🙃就不贴图了，可以自己Run一下，打印的时候注意去选择不同的进程，不然瞪坏屏幕也没有日志。</strong></p>
+<h3 id="DeathRecipient"><a href="#DeathRecipient" class="headerlink" title="DeathRecipient"></a>DeathRecipient</h3><p>你以为这样就完了？too young too simple…  </p>
+<p>不知道你有没有感觉到，两个进程交互总是觉得缺乏那么一点安全感…比如说服务端进程Crash了，而客户端进程想要调用服务端方法，这样就调用不到了。此时我们可以给Binder设置一个DeathRecipient对象，当Binder意外挂了的时候，我们可以在DeathRecipient接口的回调方法中收到通知，并作出相应的操作，比如重连服务等等。  </p>
+<p>DeathRecipient的使用如下：  </p>
+<ol>
+<li>声明DeathRecipient对象，实现其binderDied方法，当binder死亡时，会回调binderDied方法；  </li>
+<li>给Binder对象设置DeathRecipient对象。  </li>
+</ol>
+<p>在客户端MainActivity声明DeathRecipient：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment">    * Binder可能会意外死忙（比如Service Crash），Client监听到Binder死忙后可以进行重连服务等操作</span></div><div class="line"><span class="comment">    */</span></div><div class="line">   IBinder.DeathRecipient deathRecipient = <span class="keyword">new</span> IBinder.DeathRecipient() &#123;</div><div class="line">       <span class="meta">@Override</span></div><div class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">binderDied</span><span class="params">()</span> </span>&#123;</div><div class="line">           Log.d(TAG, <span class="string">"binderDied"</span>);</div><div class="line">           <span class="keyword">if</span> (messageSender != <span class="keyword">null</span>) &#123;</div><div class="line">               messageSender.asBinder().unlinkToDeath(<span class="keyword">this</span>, <span class="number">0</span>);</div><div class="line">               messageSender = <span class="keyword">null</span>;</div><div class="line">           &#125;</div><div class="line">           <span class="comment">//// <span class="doctag">TODO:</span> 2017/2/28 重连服务或其他操作</span></div><div class="line">           setupService();</div><div class="line">       &#125;</div><div class="line">   &#125;;</div><div class="line">   </div><div class="line">   ServiceConnection serviceConnection = <span class="keyword">new</span> ServiceConnection() &#123;</div><div class="line"></div><div class="line">       <span class="meta">@Override</span></div><div class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</div><div class="line">           <span class="comment">//...</span></div><div class="line">           <span class="keyword">try</span> &#123;</div><div class="line">               <span class="comment">//设置Binder死亡监听</span></div><div class="line">               messageSender.asBinder().linkToDeath(deathRecipient, <span class="number">0</span>);</div><div class="line">           &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</div><div class="line">               e.printStackTrace();</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="comment">//...</span></div><div class="line">   &#125;;</div></pre></td></tr></table></figure>
+<p>Binder中两个重要方法：  </p>
+<ol>
+<li>linkToDeath -&gt; 设置死亡代理 DeathRecipient 对象；  </li>
+<li>unlinkToDeath -&gt; Binder死亡的情况下，解除该代理。</li>
+</ol>
+<p>此外，Binder中的isBinderAlive也可以判断Binder是否死亡。</p>
+<h3 id="权限验证"><a href="#权限验证" class="headerlink" title="权限验证"></a>权限验证</h3><p>就算是公交车，上车也得嘀卡对不，如果希望我们的服务进程不想像公交车一样谁想上就上，那么我们可以加入权限验证。  </p>
+<p>介绍两种常用验证方法：  </p>
+<ol>
+<li>在服务端的onBind中校验自定义permission，如果通过了我们的校验，正常返回Binder对象，校验不通过返回null，返回null的情况下客户端无法绑定到我们的服务；  </li>
+<li>在服务端的onTransact方法校验客户端包名，不通过校验直接return false，校验通过执行正常的流程。  </li>
+</ol>
+<p>自定义permission，在Androidmanifest.xml中增加自定义的权限：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">permission</span></span></div><div class="line"><span class="tag">    <span class="attr">android:name</span>=<span class="string">"com.example.aidl.permission.REMOTE_SERVICE_PERMISSION"</span></span></div><div class="line"><span class="tag">    <span class="attr">android:protectionLevel</span>=<span class="string">"normal"</span> /&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"com.example.aidl.permission.REMOTE_SERVICE_PERMISSION"</span> /&gt;</span></div></pre></td></tr></table></figure>
+<p>服务端检查权限的方法：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">IBinder messageSender = <span class="keyword">new</span> MessageSender.Stub() &#123;</div><div class="line"></div><div class="line">    <span class="comment">//...</span></div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, Parcel data, Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</div><div class="line">        <span class="comment">/**</span></div><div class="line"><span class="comment">         * 包名验证方式</span></div><div class="line"><span class="comment">         */</span></div><div class="line">        String packageName = <span class="keyword">null</span>;</div><div class="line">        String[] packages = getPackageManager().getPackagesForUid(getCallingUid());</div><div class="line">        <span class="keyword">if</span> (packages != <span class="keyword">null</span> &amp;&amp; packages.length &gt; <span class="number">0</span>) &#123;</div><div class="line">            packageName = packages[<span class="number">0</span>];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (packageName == <span class="keyword">null</span> || !packageName.startsWith(<span class="string">"com.example.aidl"</span>)) &#123;</div><div class="line">            Log.d(<span class="string">"onTransact"</span>, <span class="string">"拒绝调用："</span> + packageName);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</div><div class="line">    <span class="comment">//自定义permission方式检查权限</span></div><div class="line">    <span class="keyword">if</span> (checkCallingOrSelfPermission(<span class="string">"com.example.aidl.permission.REMOTE_SERVICE_PERMISSION"</span>) == PackageManager.PERMISSION_DENIED) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> messageSender;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="根据不同进程，做不同的初始化工作"><a href="#根据不同进程，做不同的初始化工作" class="headerlink" title="根据不同进程，做不同的初始化工作"></a>根据不同进程，做不同的初始化工作</h3><p>相信前一两年很多朋友还在使用Android-Universal-Image-Loader来加载图片，它是需要在Application类进行初始化的。打个比如，我们用它来加载图片，而且还有一个图片选择进程，那么我们希望分配更多的缓存给图片选择进程，又或者是一些其他的初始化工作，不需要在图片选择进程初始化怎么办？  </p>
+<p>这里提供一个简单粗暴的方法，博主也是这么干的…直接拿到进程名判断，作出相应操作即可：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyApp</span> <span class="keyword">extends</span> <span class="title">Application</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate();</div><div class="line">        Log.d(<span class="string">"process name"</span>, getProcessName());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//取得进程名</span></div><div class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">getProcessName</span><span class="params">()</span> </span>&#123;</div><div class="line">        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);</div><div class="line">        List&lt;ActivityManager.RunningAppProcessInfo&gt; runningApps = am.getRunningAppProcesses();</div><div class="line">        <span class="keyword">if</span> (runningApps == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">for</span> (ActivityManager.RunningAppProcessInfo procInfo : runningApps) &#123;</div><div class="line">            <span class="keyword">if</span> (procInfo.pid == Process.myPid()) &#123;</div><div class="line">                <span class="keyword">return</span> procInfo.processName;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>每个进程创建，都会调用Application的onCreate方法，这是一个需要注意的地方，我们也可以根据当前进程的pid，拿到当前进程的名字去做判断，然后做一些我们需要的逻辑，我们这个例子，拿到的两个进程名分别是：</strong>  </p>
+<ol>
+<li><strong>客户端进程：com.example.aidl</strong>  </li>
+<li><strong>服务端进程：com.example.aidl:remote</strong>  </li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>多进程app可以在系统中申请多份内存，但应合理使用，建议把一些高消耗但不常用的模块放到独立的进程，不使用的进程可及时手动关闭；  </li>
+<li>实现多进程的方式有多种：四大组件传递Bundle、Messenger、AIDL等，选择适合自己的使用场景；  </li>
+<li>Android中实现多进程通讯，建议使用系统提供的Binder类，该类已经实现了多进程通讯而不需要我们做底层工作；  </li>
+<li>多进程应用，Application将会被创建多次；  </li>
+</ol>
+<h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><p>这篇文章断断续续写了很久，而且我相信真正使用起来的同学可能不多，选择这样一个话题我是吃力不讨好… 但是我还是希望可以在这里提供一个完整的解决方案给大家。简单的多进程使用，而且效果显著的，比如把图片选择和WebView配置到独立的进程，这个我希望可以大家行动起来。这篇文章的知识点非常多，理解起来可能不是太容易，如果有兴趣，我建议你手动去写一下，然后不理解的地方，打断点看看是什么样的运行步骤。  </p>
+<p>对于面试的同学，如果在面试过程中说到多进程，跟面试官聊得开，估计也是能加点分的，或者在实际工作中，一些使用多进程可以更好地解决问题的地方，你可以在会议中拍桌猛起，跟主管说：“我有一个大胆的想法…”，这样装逼也不错（当然，被炒了的话就不关我的事了…）  </p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/实践应用/" rel="tag"># 实践应用</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/11/解耦思路/" rel="next" title="对于有多种可替代解决方案的业务逻辑，提供一种快速更换的思路">
+                <i class="fa fa-chevron-left"></i> 对于有多种可替代解决方案的业务逻辑，提供一种快速更换的思路
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/06/react-native-remote-debug/" rel="prev" title="记一次React Native远程调试，解决只在千里之外可重现的Bug。">
+                记一次React Native远程调试，解决只在千里之外可重现的Bug。 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jianwei Chen" />
+          <p class="site-author-name" itemprop="name">Jianwei Chen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stop stopping.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要使用多进程，一个进程不就可以了吗？"><span class="nav-number">2.</span> <span class="nav-text">为什么要使用多进程，一个进程不就可以了吗？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么需要“跨进程通讯”？"><span class="nav-number">3.</span> <span class="nav-text">为什么需要“跨进程通讯”？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨进程通讯的方式有哪些？"><span class="nav-number">4.</span> <span class="nav-text">跨进程通讯的方式有哪些？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用AIDL实现一个多进程消息推送"><span class="nav-number">5.</span> <span class="nav-text">使用AIDL实现一个多进程消息推送</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现思路"><span class="nav-number">6.</span> <span class="nav-text">实现思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子具体实现"><span class="nav-number">7.</span> <span class="nav-text">例子具体实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Step0-AIDL调用流程概览"><span class="nav-number">7.1.</span> <span class="nav-text">Step0. AIDL调用流程概览</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step1-客户端使用bindService方法绑定服务端"><span class="nav-number">7.2.</span> <span class="nav-text">Step1.客户端使用bindService方法绑定服务端</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-1-创建客户端和服务端，把服务端配置到另外的进程"><span class="nav-number">7.2.1.</span> <span class="nav-text">1.1 创建客户端和服务端，把服务端配置到另外的进程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#1-2-绑定MessageService到MainActivity"><span class="nav-number">7.2.2.</span> <span class="nav-text">1.2 绑定MessageService到MainActivity</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Stpe2-服务端在onBind方法返回Binder对象"><span class="nav-number">7.3.</span> <span class="nav-text">Stpe2.服务端在onBind方法返回Binder对象</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-首先，什么是Binder"><span class="nav-number">7.3.1.</span> <span class="nav-text">2.1 首先，什么是Binder?</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-其次，这个需要在onBind方法返回的Binder对象从何而来？"><span class="nav-number">7.3.2.</span> <span class="nav-text">2.2 其次，这个需要在onBind方法返回的Binder对象从何而来？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-3-定义AIDL接口"><span class="nav-number">7.3.3.</span> <span class="nav-text">2.3 定义AIDL接口</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-4-创建一个AIDL接口，接口中提供发送消息的方法（Android-Studio创建AIDL：项目右键-gt-New-gt-AIDL-gt-AIDL-File），代码如下："><span class="nav-number">7.3.4.</span> <span class="nav-text">2.4 创建一个AIDL接口，接口中提供发送消息的方法（Android Studio创建AIDL：项目右键 -> New -> AIDL -> AIDL File），代码如下：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-5-在服务端创建MessageSender-aidl这个AIDL接口自动生成的Binder对象，并返回给客户端调用，服务端MessageService代码如下："><span class="nav-number">7.3.5.</span> <span class="nav-text">2.5 在服务端创建MessageSender.aidl这个AIDL接口自动生成的Binder对象，并返回给客户端调用，服务端MessageService代码如下：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-6-客户端拿到Binder对象后调用远程方法"><span class="nav-number">7.3.6.</span> <span class="nav-text">2.6 客户端拿到Binder对象后调用远程方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#知其然，知其所以然。"><span class="nav-number">8.</span> <span class="nav-text">知其然，知其所以然。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨进程的回调接口"><span class="nav-number">9.</span> <span class="nav-text">跨进程的回调接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DeathRecipient"><span class="nav-number">10.</span> <span class="nav-text">DeathRecipient</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#权限验证"><span class="nav-number">11.</span> <span class="nav-text">权限验证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#根据不同进程，做不同的初始化工作"><span class="nav-number">12.</span> <span class="nav-text">根据不同进程，做不同的初始化工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">13.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结语"><span class="nav-number">14.</span> <span class="nav-text">结语</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jianwei Chen</span>
+</div>
+
+
+<div class="powered-by">
+  Love Android.
+</div>
+
+<div class="theme-info">
+  Rage Your Dream.
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://cjw-blog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://cjw-blog.net/2017/02/26/AIDL/';
+          this.page.identifier = '2017/02/26/AIDL/';
+          this.page.title = '巧用Android多进程，微信，微博等主流App都在用';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://cjw-blog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("cgT7AdFv2yFiv7eFvXNSaA4K-gzGzoHsz", "EIYGCbKNnEgIY19XFBBbaovd");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
