@@ -103,7 +103,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://jsh180.net/rn_server.png">
 <meta property="og:image" content="http://jsh180.net/ip_sec.jpg">
-<meta property="og:updated_time" content="2019-02-20T13:39:14.931Z">
+<meta property="og:updated_time" content="2019-02-20T14:03:41.468Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="记一次React Native远程调试，解决只在千里之外可重现的Bug。">
 <meta name="twitter:description" content="前言这篇文章的主要内容有两个：    React Native如何调试不在局域网内的设备、如何把这些设备变成在局域网内方便地调试（无论设备在4G还是Wifi的情况下）   深坑提醒：截止到发稿前华为P10最新版本系统 EMUI5.0 (Android 7.0），Style Sheet中的transform属性失效了  故事的起因一天，老师过来跟我说，咱们App聊天模块里面的列表，在一台华为P10手">
@@ -415,10 +415,12 @@
 <p>接下来当然就是最激动人心的时刻啦，同事的机器顺利地连上了我电脑本地的npm服务，我和运维小哥四目相视，会心一笑。然而，事情总是出乎意料，命运也喜欢捉弄人，一下秒，妹子同事说手机红屏了，在我的Chrome调试页面中打印了一行：  </p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Failed to execute <span class="string">'send'</span> on <span class="string">'XMLHttpRequest'</span>: Failed to load <span class="string">'http://localhost:8082/create_session'</span>  </div><div class="line">Realm failed to connect to the embedded debug server inside the app. </div><div class="line">If attempting to use Chrome debugging <span class="keyword">from</span> a device, ensure the device is reachable on the same network <span class="keyword">as</span> <span class="keyword">this</span> machine.</div></pre></td></tr></table></figure>
 <p>惊不惊喜，意不意外？  </p>
-<p>咋一看，似乎问题不大，再把我机器的8082端口打开，是不是应该就可以了？然而，事情总是出乎意料，命运也喜欢捉弄人。X妹子说，还是一样耶。然后，我在realm-js的项目下找到了这个issues: <a href="https://github.com/realm/realm-js/issues/284，这个issues已经是closed状态，但是可能因为我在非局域网调试的原因，升级到最新版本的realm-js，仍然存在。此时，默默说了一句WTF之后，我感觉整个人垮掉了。" target="_blank" rel="external">https://github.com/realm/realm-js/issues/284，这个issues已经是closed状态，但是可能因为我在非局域网调试的原因，升级到最新版本的realm-js，仍然存在。此时，默默说了一句WTF之后，我感觉整个人垮掉了。</a></p>
+<p>咋一看，似乎问题不大，再把我机器的8082端口打开，是不是应该就可以了？然而，事情总是出乎意料，命运也喜欢捉弄人。X妹子说，还是一样耶。然后，我在realm-js的项目下找到了这个issues: <a href="https://github.com/realm/realm-js/issues/284" target="_blank" rel="external">https://github.com/realm/realm-js/issues/284</a>，这个issues已经是closed状态，但是可能因为我在非局域网调试的原因，升级到最新版本的realm-js，仍然存在。此时，默默说了一句WTF之后，我感觉整个人垮掉了。</p>
 <h3 id="WTF之后的思考"><a href="#WTF之后的思考" class="headerlink" title="WTF之后的思考"></a>WTF之后的思考</h3><p>注意到错误提示中的 “ensure the device is reachable on the same network as this machine” ，我又有了一个大胆的想法：<strong>让该同事的手机，跟我的电脑在同一个网段。</strong>  </p>
 <p>这…似乎还真有这么一种操作，这个世界上，有一种叫 “Virtual Private Network” 的东西（和谐和谐），假设我的电脑和该同事的手机，同时连接上我们自己的代理服务器，通过这个代理的地址，似乎就可以实现 “在同一个网段” 这个需求。</p>
-<p>电脑连接上代理后，会再分配一个地址，Mac上使用ifconfig命令查看 (Win ipconfig)：<br><img src="http://jsh180.net/ip_sec.jpg" alt="ipsec0遮挡部分" title="ipsec0遮挡部分"><br>下面这一波操作就很稳了，我们终于顺利连接到了X同时的手机，可以看到Log，也看到打断点，甚至在4G下都可以调试：  </p>
+<p>电脑连接上代理后，会再分配一个地址，Mac上使用ifconfig命令查看 (Win ipconfig)：</p>
+<p><img src="http://jsh180.net/ip_sec.jpg" alt="ipsec0遮挡部分" title="ipsec0遮挡部分">  </p>
+<p>下面这一波操作就很稳了，我们终于顺利连接到了X同时的手机，可以看到Log，也看到打断点，甚至在4G下都可以调试：  </p>
 <ol>
 <li>手机电脑都连上代理  </li>
 <li>在 “Dev Settings” 中设置 “Debug server host &amp; port for device”，修改为上面的代理地址（ipsec0遮挡部分）  </li>
@@ -440,8 +442,8 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">transform: [ &#123; <span class="attr">scaleY</span>: <span class="number">-1</span> &#125; ] <span class="comment">//垂直翻转</span></div><div class="line">    </div><div class="line">transform: [ &#123; <span class="attr">scaleX</span>: <span class="number">-1</span> &#125; ] <span class="comment">//水平翻转</span></div></pre></td></tr></table></figure>
 <p>到这里已经确诊了，transform 在P10上出问题了，这个问题也可以在 React Native 的 issues 上找到：  </p>
 <ol>
-<li><a href="https://github.com/expo/react-native-invertible-scroll-view/issues/47" target="_blank" rel="external">react-native-invertible-scroll-view not working on Huawei Android 7 devices.</a>  </li>
-<li><a href="https://github.com/facebook/react-native/pull/14646" target="_blank" rel="external">always set camera distance on transforms, to default 1280 if 0</a>   </li>
+<li><strong><a href="https://github.com/expo/react-native-invertible-scroll-view/issues/47" target="_blank" rel="external">react-native-invertible-scroll-view not working on Huawei Android 7 devices.</a></strong>  </li>
+<li><strong><a href="https://github.com/facebook/react-native/pull/14646" target="_blank" rel="external">always set camera distance on transforms, to default 1280 if 0</a></strong>   </li>
 </ol>
 <p>目前已经确认有问题的机型如下：  </p>
 <blockquote>
@@ -451,7 +453,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">transform: [ &#123; <span class="attr">scaleY</span>: <span class="number">-1</span>, <span class="attr">perspective</span>: <span class="number">1280</span> &#125; ]</div></pre></td></tr></table></figure>
 <p>2）对于Android，使用过时的 {scaleY: -1} 属性，而不是 transform: [ { scaleY: -1 } ]，iOS保持不变  </p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> styles = StyleSheet.create(&#123;</div><div class="line">    verticallyInverted: Platform.select(&#123;</div><div class="line">        ios: &#123;<span class="attr">transform</span>: [&#123;<span class="attr">scaleY</span>: <span class="number">-1</span>&#125;]&#125;,</div><div class="line">        android: &#123;<span class="attr">scaleY</span>: <span class="number">-1</span>&#125;,</div><div class="line">    &#125;),</div><div class="line">    horizontallyInverted: Platform.select(&#123;</div><div class="line">        ios: &#123;<span class="attr">transform</span>: [&#123;<span class="attr">scaleX</span>: <span class="number">-1</span>&#125;]&#125;,</div><div class="line">        android: &#123;<span class="attr">scaleX</span>: <span class="number">-1</span>&#125;,</div><div class="line">    &#125;),</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-<p>最后附上修复好的翻转ScrollView: <a href="https://github.com/V1sk/react-native-invertible-scroll-view/blob/master/InvertibleScrollView.js" target="_blank" rel="external">V1sk/react-native-invertible-scroll-view</a>   </p>
+<p>最后附上修复好的翻转ScrollView: <strong><a href="https://github.com/V1sk/react-native-invertible-scroll-view/blob/master/InvertibleScrollView.js" target="_blank" rel="external">V1sk/react-native-invertible-scroll-view</a></strong>   </p>
 <h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><p>这一波调试过程十分曲折，希望大家不会遇到这些奇葩问题。另外，评论系统又GG了，继多说停止服务之后，网易云跟帖也停了，评论数据也清了，现在唯有用Disqus了，也是需要 Virtual Private Network 才能看到评论系统哟~</p>
 
       
