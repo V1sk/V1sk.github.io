@@ -38,6 +38,6 @@
   <entry>
     <title><![CDATA[欢迎阅读]]></title>
     <url>%2F2016%2F06%2F19%2FWelcome%2F</url>
-    <content type="text"><![CDATA[欢迎阅读你好，我是一位Android开发工程师，2014年开始工作。我的博客最主要的用途是用于分享我个人对技术的观点以及经验，我希望这些内容可以帮助到有需要的人，同时，也希望通过写作，来提高自己对技术的理解。 博客将可能涉及的技术栈： Android JNI C / C++ React Native JavaScript ECMAScript 设计模式]]></content>
+    <content type="text"><![CDATA[欢迎阅读你好，我是一位Android开发工程师，2014年开始工作。我的博客最主要的用途是用于分享我个人对技术的观点以及经验，我希望这些内容可以帮助到有需要的人，同时，也希望通过写作，来提高自己对技术的理解。 博客将可能涉及的技术栈： Android JNI / NDK C / C++ React Native JavaScript ECMAScript 设计模式]]></content>
   </entry>
 </search>
